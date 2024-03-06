@@ -121,7 +121,7 @@ for i in range(len(dataset)):
     id = str(id)
     name = " ".join(name)
     dataset[i] = [id, name, title, klass, score,  login, password]
-
+header = header.replace("\n", ",login,password\n")
 # добавляем названия столбцов к сериализованным данным
 serialized_dataset = header + to_csv_string(dataset)
 
