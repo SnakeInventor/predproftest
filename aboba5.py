@@ -83,7 +83,7 @@ def my_hash(s):
     h = 0
     for i in range(len(s)):
         h += (s[i]*(p**i % m)) % m
-    return h
+    return h % m
 
 """
 Необходимо составить хэш-таблицу, в 
