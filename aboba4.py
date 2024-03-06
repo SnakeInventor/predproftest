@@ -1,3 +1,5 @@
+import random
+
 ### УНИВЕРСАЛЬНЫЕ ФУНКЦИИ
 
 def format_data(data):
@@ -50,64 +52,82 @@ with open("students.csv", "r" , encoding="utf8") as F:
 dataset = format_data(raw_data)
 
 """
-Задача N2
+Задача 4
 """
-def insert_sort(table, column_ind):
-	"""Sort dataset-like 2d array by selected column
-	
-	Arguments:
-		table: dataset-like 2d array
-		element_ind: index of column, by which sorting will be performed
-	"""
-	for i in range (1, len(table)):
-		pos = i
-		current = table[pos]
-		while pos > 0 and current[column_ind] < table[pos - 1][column_ind]:
-			table[pos] = table[pos - 1]
-			pos -= 1
-		table[pos] = current
-	return table
 
-#Заменим "None" на нули чтобы можно было сортировать, остальное в числа
-for i in range(len(dataset)): 
-    id, name, title, klass, score = dataset[i] 
-    try:    	score = int(score)
-    except:
-    	score = 0 
-    dataset[i] = [id, name, title, klass, score] 
+"""
+Реализуйте методы/функции, которые будут генерировать логины и пароли для пользователей.
+"""
+
+"""
+Пароль должен состоять из 8 символов, включать в себя заглавные, строчные буквы английского алфавита и цифры.
+"""
+
+def make_password():
+    """Makes random 8 symbol password from english alphabet and numbers"""
+
+    # все символы, которые могут быть в пароле (строчные и заглавные английские буквы, цифры)
+    smol_letters = "qwertyuiopasdfghjklzxcvbnm"
+    BIG_letters = "QWERTYUIOPASDFGHJKLZXCVBNM"
+    digits = "0123456789"
+
+    bukvi = smol_letters + BIG_letters + digits
     
-#Отсортируем по оценкам (индекс столбца - 4), развернем чтобы было по убыванию
-
-dataset = insert_sort(dataset, 4)[::-1]
-
-# Заменим нули на "None" обратно, а числа конвертируем в строку
-
-for i in range(len(dataset)): 
-    id, name, title, klass, score = dataset[i] 
-    if score == 0:
-    	score = "None"
-    else:
-    	score = str(score)
-    dataset[i] = [id, name, title, klass, score] 
+    # восемь раз выбираем случайный символ из доступных
+    parol = [random.choice(bukvi) for c in range(8)]
     
+    parol = "".join(parol)
+    return parol
 
 
-# Создадим список со всеми десятиклассниками с максимальной оценкой
-top_10k = []
-for i in range(len(dataset)): 
+"""
+Логин должен состоять из фамилии и инициалов, например,
+если школьника зовут Соколов Иван Иванович,
+его логин должен выглядеть как Соколов_ИИ.
+"""
+
+# Функция, делающая логин из Фамилии, первой буквы имени и первой буквы отчества
+def make_login(FIO):
+    """ Makes login for user, abbreviating first name and patronymic
+
+    Arguments:
+    FIO: array containing last name, first name and patronymic
+    """
+    return FIO[0] + "_" + FIO[1][0] + FIO[2][0]
+
+
+for i in range(len(dataset)):
     id, name, title, klass, score = dataset[i]
-    if "10" in klass and score == "5":
-    	top_10k.append(dataset[i])
-	
 
-#отсортируем по id по возрастанию
+    login = make_login(name)
+    password = make_password()
 
-top_10k = insert_sort(top_10k, 0)
+    # добавляем два новых столбца в строку
+    dataset[i] = [id, name, title, klass, score, login, password] 
 
-# выведем 3-х первых
+"""
+Последним этапом полученный список записать в новый students_password.csv файл.
+"""
 
-print("Десятый класс")
-for i in range(3):
-	id, name, title, klass, score = top_10k[i]
-	print(f"{i + 1} место: {name[1][0]}. {name[0]}")
-	
+#(!!!НЕ ЗАБЫВАЕМ УКАЗАТЬ НОВЫЕ СТОЛБЦЫ ПРИ ФОРМАТИРОВАНИИ!!!)
+### ЗАПИСЬ ДАННЫХ В ФАЙЛ
+
+# Делаем так чтобы каждая ячейки в списке содержала только одну строку 
+
+ #(!!!НЕ ЗАБЫВАЕМ ДОБАВИТЬ НОВЫЕ СТОЛБЦЫ ПРИ ФОРМАТИРОВАНИИ!!!)   
+for i in range(len(dataset)):
+    id, name, title, klass, score, login, password = dataset[i]
+    
+    id = str(id)
+    name = " ".join(name)
+    dataset[i] = [id, name, title, klass, score,  login, password]
+
+# добавляем названия столбцов к сериализованным данным
+serialized_dataset = header + to_csv_string(dataset)
+
+# "w+" - режим записи, плюс означает, что файл создастся если не существует.
+# encoding="utf8" - кодировка для .csv формата
+
+
+with open("students_password.csv","w+", encoding="utf8") as F:
+    F.write(serialized_dataset) # записывает строку с сериализованными данными в НОВЫЙ файл
