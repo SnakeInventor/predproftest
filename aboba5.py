@@ -66,6 +66,13 @@ dataset = format_data(raw_data)
 """
 
 def my_hash(s):
+    """Creates hash sum for given string
+
+    Arguments:
+    s: string made from kirrilick letters and spaces
+    """
+
+    
     # символы встречающиеся в ФИО для хеширования !очень важно! добавить в конце пробел
     d = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ "
     # превращаем символ в его номер в сторке d
